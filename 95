@@ -1,0 +1,69 @@
+Given an integer n, generate all structurally unique BST's (binary search trees) that store values 1 ... n.
+
+Example:
+
+Input: 3
+Output:
+[
+  [1,null,3,2],
+  [3,2,null,1],
+  [3,1,null,null,2],
+  [2,1,3],
+  [1,null,2,null,3]
+]
+Explanation:
+The above output corresponds to the 5 unique BST's shown below:
+
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+
+
+这道题和96这道题如出一辙，但是这道题目相比之下要更加复杂一点，需要将每一课数进行构造出来，下面的题解中所给的vector数组中
+保存了每一棵树的根节点，也是构造完的树，主要是BST的递归构造，非常经典地一道题目。
+
+Answer:
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+    public:
+		vector<TreeNode*> createTree(int st,int ed) {
+			vector<TreeNode*> ans;
+			if(st>ed) {
+				ans.push_back(NULL);
+				return ans;
+			} else if(ed==st) {
+				ans.push_back(new TreeNode(st));
+				return ans;
+			} else { //st<ed的时候
+				for(int i=st; i<=ed; i++) {
+					vector<TreeNode*> left=createTree(st,i-1);
+					vector<TreeNode*> right=createTree(i+1,ed);
+					for(int l=0; l<left.size(); l++) {
+						for(int r=0; r<right.size(); r++) {
+							TreeNode *node=new TreeNode(i);
+							node->left=left[l];
+							node->right=right[r];
+							ans.push_back(node);
+						}
+					}
+				}
+			}
+			return ans;
+		}
+		vector<TreeNode*> generateTrees(int n) {
+			vector<TreeNode*> ans;
+			if(n<=0) return ans;
+			return createTree(1,n);//createTree函数返回一个数组 数组保存了每一棵已经建好树的根节点
+		}
+};
